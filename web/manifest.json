@@ -1,6 +1,6 @@
 {
-    "name": "myapp",
-    "short_name": "myapp",
+    "name": "Futures Martingale Calculator",
+    "short_name": "Futures Martingale Calculator",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

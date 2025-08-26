@@ -9,7 +9,7 @@ import 'dart:developer' as developer;
 import 'package:stack_trace/stack_trace.dart';
 import 'theme.dart';
 
-const String appName = 'Bybit Futures Martingale Calculator';
+const String appName = 'Futures Martingale Calculator';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
