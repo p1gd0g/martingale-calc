@@ -1,12 +1,10 @@
-import 'dart:ui';
-
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'dart:developer' as developer;
 
 import 'package:stack_trace/stack_trace.dart';
+import 'theme.dart';
 
 const String appName = 'Bybit Futures Martingale Calculator';
 
@@ -24,12 +22,7 @@ void main() {
         }
       },
       title: appName,
-      theme: FlexThemeData.light(
-        scheme: FlexScheme.deepBlue,
-        subThemesData: const FlexSubThemesData(
-          inputSelectionSchemeColor: SchemeColor.white,
-        ),
-      ),
+      theme: AppTheme.lightTheme,
       home: const BybitMartingaleCalculator(),
     ),
   );
@@ -175,49 +168,42 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1426),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Row(
           children: [
             Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7931A),
-                borderRadius: BorderRadius.circular(6),
-              ),
+              width: AppTheme.bitcoinIconSize,
+              height: AppTheme.bitcoinIconSize,
+              decoration: AppTheme.bitcoinIconDecoration,
               child: const Icon(
                 Icons.currency_bitcoin,
-                color: Colors.white,
-                size: 20,
+                color: AppTheme.whiteTextColor,
+                size: AppTheme.appBarIconSize,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppTheme.appBarTitleSpacing),
             const Text(
               'Futures Martingale Calculator',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTheme.appBarTitleStyle,
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E2329),
+        backgroundColor: AppTheme.cardBackgroundColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppTheme.largeSpacing),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildParametersCard(),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppTheme.largeSpacing),
               _buildCalculateButton(),
               if (_levels.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: AppTheme.largeSpacing),
                 _buildResultsTable(),
               ],
             ],
@@ -229,24 +215,13 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
 
   Widget _buildParametersCard() {
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E2329),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF2B3139)),
-      ),
-      padding: const EdgeInsets.all(20),
+      decoration: AppTheme.cardDecoration,
+      padding: AppTheme.cardPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Trading Parameters',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 20),
+          const Text('Trading Parameters', style: AppTheme.cardTitleStyle),
+          const SizedBox(height: AppTheme.extraLargeSpacing),
 
           Row(
             children: [
@@ -254,11 +229,8 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Direction',
-                      style: TextStyle(color: Color(0xFF848E9C), fontSize: 12),
-                    ),
-                    const SizedBox(height: 4),
+                    const Text('Direction', style: AppTheme.labelStyle),
+                    const SizedBox(height: AppTheme.smallSpacing),
                     Row(
                       children: [
                         Expanded(
@@ -266,55 +238,33 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
                             onTap: () =>
                                 setState(() => _selectedDirection = 'Long'),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _selectedDirection == 'Long'
-                                    ? const Color(0xFF02C076)
-                                    : const Color(0xFF2B3139),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                  color: _selectedDirection == 'Long'
-                                      ? const Color(0xFF02C076)
-                                      : const Color(0xFF373D47),
-                                ),
+                              padding: AppTheme.directionButtonPadding,
+                              decoration: AppTheme.getLongButtonDecoration(
+                                _selectedDirection == 'Long',
                               ),
                               child: const Center(
                                 child: Text(
                                   'Long',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: AppTheme.directionButtonStyle,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppTheme.mediumSpacing),
                         Expanded(
                           child: GestureDetector(
                             onTap: () =>
                                 setState(() => _selectedDirection = 'Short'),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _selectedDirection == 'Short'
-                                    ? const Color(0xFFF6465D)
-                                    : const Color(0xFF2B3139),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                  color: _selectedDirection == 'Short'
-                                      ? const Color(0xFFF6465D)
-                                      : const Color(0xFF373D47),
-                                ),
+                              padding: AppTheme.directionButtonPadding,
+                              decoration: AppTheme.getShortButtonDecoration(
+                                _selectedDirection == 'Short',
                               ),
                               child: const Center(
                                 child: Text(
                                   'Short',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: AppTheme.directionButtonStyle,
                                 ),
                               ),
                             ),
@@ -327,7 +277,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppTheme.extraLargeSpacing),
 
           // Price and Position inputs
           Row(
@@ -339,7 +289,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
                   'USDT',
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppTheme.largeSpacing),
               Expanded(
                 child: _buildInputField(
                   'Initial Investment',
@@ -349,7 +299,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppTheme.largeSpacing),
 
           Row(
             children: [
@@ -362,7 +312,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
                   '%',
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppTheme.largeSpacing),
               Expanded(
                 child: _buildInputField(
                   'Position Multiplier',
@@ -372,7 +322,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppTheme.largeSpacing),
 
           Row(
             children: [
@@ -383,7 +333,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
                   'times',
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppTheme.largeSpacing),
               Expanded(
                 child: _buildInputField(
                   'Profit Target per Round',
@@ -393,7 +343,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppTheme.largeSpacing),
 
           Row(
             children: [
@@ -415,36 +365,23 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(color: Color(0xFF848E9C), fontSize: 12),
-        ),
-        const SizedBox(height: 4),
+        Text(label, style: AppTheme.labelStyle),
+        const SizedBox(height: AppTheme.smallSpacing),
         Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF2B3139),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: const Color(0xFF373D47)),
-          ),
+          decoration: AppTheme.inputDecoration,
           child: TextFormField(
-            cursorColor: Colors.white,
+            cursorColor: AppTheme.whiteTextColor,
             controller: controller,
-            style: const TextStyle(color: Colors.white),
+            style: AppTheme.inputStyle,
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
             ],
             decoration: InputDecoration(
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
-              ),
+              contentPadding: AppTheme.inputPadding,
               suffixText: suffix,
-              suffixStyle: const TextStyle(
-                color: Color(0xFF848E9C),
-                fontSize: 12,
-              ),
+              suffixStyle: AppTheme.suffixStyle,
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -464,18 +401,13 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
   Widget _buildCalculateButton() {
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: AppTheme.buttonHeight,
       child: ElevatedButton(
         onPressed: _calculate,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFF7931A),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          elevation: 0,
-        ),
+        style: AppTheme.primaryButtonStyle,
         child: const Text(
           'Calculate Martingale Strategy',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: AppTheme.buttonTextStyle,
         ),
       ),
     );
@@ -483,36 +415,24 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
 
   Widget _buildResultsTable() {
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E2329),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF2B3139)),
-      ),
+      decoration: AppTheme.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Padding(
-            padding: EdgeInsets.all(20),
+            padding: AppTheme.cardPadding,
             child: Text(
               'Martingale Levels Detail',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTheme.cardTitleStyle,
             ),
           ),
           DataTable(
-            headingRowColor: WidgetStateProperty.all(const Color(0xFF2B3139)),
-            dataRowColor: WidgetStateProperty.all(const Color(0xFF1E2329)),
-            dividerThickness: 1,
-            headingTextStyle: const TextStyle(
-              color: Color(0xFF848E9C),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-            dataTextStyle: const TextStyle(color: Colors.white, fontSize: 11),
-            columnSpacing: 16,
+            headingRowColor: AppTheme.tableHeaderRowColor,
+            dataRowColor: AppTheme.tableDataRowColor,
+            dividerThickness: AppTheme.tableDividerThickness,
+            headingTextStyle: AppTheme.tableHeaderStyle,
+            dataTextStyle: AppTheme.tableDataStyle,
+            columnSpacing: AppTheme.tableColumnSpacing,
             columns: const [
               DataColumn(label: Text('Level')),
               DataColumn(label: Text('Entry Price')),
