@@ -3,10 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
+import 'package:myapp/env.dart';
 import 'package:myapp/firebase_options.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:developer' as developer;
 
 import 'package:stack_trace/stack_trace.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'theme.dart';
 
 const String appName = 'Futures Martingale Calculator';
@@ -177,6 +180,14 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              launchUrlString('https://www.p1gd0g.cc');
+            },
+            icon: Icon(Icons.info),
+          ),
+        ],
         title: Row(
           children: [
             Container(
@@ -193,6 +204,20 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
             const Text(
               'Futures Martingale Calculator',
               style: AppTheme.appBarTitleStyle,
+            ),
+            const SizedBox(width: AppTheme.appBarTitleSpacing),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Text(
+                    "${Env.version}/${snapshot.data?.version ?? 'Unknown version'}",
+                    style: AppTheme.labelStyle,
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
             ),
           ],
         ),

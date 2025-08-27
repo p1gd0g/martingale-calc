@@ -1,16 +1,15 @@
-# myapp
+# martingale calculator
 
-A new Flutter project.
+## build
 
-## Getting Started
+通过环境变量设置版本号
 
-This project is a starting point for a Flutter application.
+```
+$ENV:build_vsn='0.1.0'
+```
 
-A few resources to get you started if this is your first Flutter project:
+打包 web
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter build web --build-name $ENV:build_vsn --dart-define vsn=$ENV:build_vsn --output public
+```
