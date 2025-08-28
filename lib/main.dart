@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'package:myapp/env.dart';
 import 'package:myapp/firebase_options.dart';
+import 'package:myapp/modals/result.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:developer' as developer;
 
@@ -161,15 +162,9 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
           positionSize: currentPositionSize,
           totalPositionSize: totalPositionSize,
           averageEntryPrice: averageEntryPrice,
-          // notionalValue: notionalValue,
-          // totalNotionalValue: totalNotionalValue,
           leverage: leverage,
         ),
       );
-
-      // if (i < maxAdditions) {
-      //   currentPositionSize *= multiplier;
-      // }
     }
 
     return levels;
@@ -236,7 +231,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
               _buildCalculateButton(),
               if (_levels.isNotEmpty) ...[
                 const SizedBox(height: AppTheme.largeSpacing),
-                _buildResultsTable(),
+                buildResultsTable(_levels),
               ],
             ],
           ),
@@ -444,52 +439,6 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
       ),
     );
   }
-
-  Widget _buildResultsTable() {
-    return Container(
-      decoration: AppTheme.cardDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Padding(
-            padding: AppTheme.cardPadding,
-            child: Text(
-              'Martingale Levels Detail',
-              style: AppTheme.cardTitleStyle,
-            ),
-          ),
-          DataTable(
-            headingRowColor: AppTheme.tableHeaderRowColor,
-            dataRowColor: AppTheme.tableDataRowColor,
-            dividerThickness: AppTheme.tableDividerThickness,
-            headingTextStyle: AppTheme.tableHeaderStyle,
-            dataTextStyle: AppTheme.tableDataStyle,
-            columnSpacing: AppTheme.tableColumnSpacing,
-            columns: const [
-              DataColumn(label: Text('Level')),
-              DataColumn(label: Text('Entry Price')),
-              DataColumn(label: Text('Exit Price')),
-              DataColumn(label: Text('Position Size')),
-              DataColumn(label: Text('Total Position')),
-              DataColumn(label: Text('Avg Entry')),
-            ],
-            rows: _levels.map((level) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(level.level.toString())),
-                  DataCell(Text(level.entryPrice.toStringAsFixed(2))),
-                  DataCell(Text(level.exitPrice.toStringAsFixed(2))),
-                  DataCell(Text(level.positionSize.toStringAsFixed(6))),
-                  DataCell(Text(level.totalPositionSize.toStringAsFixed(6))),
-                  DataCell(Text(level.averageEntryPrice.toStringAsFixed(2))),
-                ],
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class MartingaleLevel {
@@ -500,8 +449,6 @@ class MartingaleLevel {
   final double positionSize;
   final double totalPositionSize;
   final double averageEntryPrice;
-  // final double notionalValue;
-  // final double totalNotionalValue;
   final double leverage;
 
   MartingaleLevel({
@@ -512,8 +459,6 @@ class MartingaleLevel {
     required this.positionSize,
     required this.totalPositionSize,
     required this.averageEntryPrice,
-    // required this.notionalValue,
-    // required this.totalNotionalValue,
     required this.leverage,
   });
 }
