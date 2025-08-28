@@ -2,7 +2,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:myapp/controllers/controller.dart';
 import 'package:myapp/env.dart';
 import 'package:myapp/firebase_options.dart';
 import 'package:myapp/modals/result.dart';
@@ -50,7 +52,7 @@ class BybitMartingaleCalculator extends StatefulWidget {
 class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
   final _formKey = GlobalKey<FormState>();
 
-  final _entryPriceController = TextEditingController(text: '116368.7');
+  final _entryPriceController = TextEditingController(text: '100000');
   final _priceDecreaseController = TextEditingController(text: '4.9');
   final _positionMultiplierController = TextEditingController(text: '1.1');
   final _maxAdditionsController = TextEditingController(text: '10');
@@ -75,6 +77,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
 
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
 
     final entryPrice = double.parse(_entryPriceController.text);
     final priceDecrease = double.parse(_priceDecreaseController.text) / 100;
@@ -396,28 +399,44 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
         const SizedBox(height: AppTheme.smallSpacing),
         Container(
           decoration: AppTheme.inputDecoration,
-          child: TextFormField(
-            cursorColor: AppTheme.whiteTextColor,
-            controller: controller,
-            style: AppTheme.inputStyle,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-            ],
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: AppTheme.inputPadding,
-              suffixText: suffix,
-              suffixStyle: AppTheme.suffixStyle,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Required';
+          child: FutureBuilder(
+            future: Get.put(Controller()).asyncPrefs.getString(label),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
               }
-              if (double.tryParse(value) == null) {
-                return 'Invalid number';
+
+              if (snapshot.data?.isNotEmpty ?? false) {
+                controller.text = snapshot.data!;
               }
-              return null;
+
+              return TextFormField(
+                onSaved: (newValue) {
+                  Get.put(Controller()).asyncPrefs.setString(label, newValue!);
+                },
+                cursorColor: AppTheme.whiteTextColor,
+                controller: controller,
+                style: AppTheme.inputStyle,
+                keyboardType: TextInputType.number,
+                // inputFormatters: [
+                //   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                // ],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: AppTheme.inputPadding,
+                  suffixText: suffix,
+                  suffixStyle: AppTheme.suffixStyle,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Required';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Invalid number';
+                  }
+                  return null;
+                },
+              );
             },
           ),
         ),
