@@ -1,9 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:myapp/controllers/controller.dart';
 import 'package:myapp/env.dart';
 import 'package:myapp/firebase_options.dart';
@@ -131,6 +129,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     var initialPosition = initialInvestment / sum / entryPrice * leverage;
     double currentPositionSize = initialPosition;
     double averageEntryPrice = entryPrice;
+    var totalMakerFee = 0.0;
 
     for (int i = 0; i < maxAdditions; i++) {
       if (i != 0) {
@@ -141,19 +140,29 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
             initialInvestment / sum * xList[i] / levelEntryPrice * leverage;
       }
 
+      const makerFee = 0.02 / 100;
+      const takerFee = 0.055 / 100;
+
       totalPositionSize += currentPositionSize;
       totalNotionalValue += currentPositionSize * levelEntryPrice;
+      totalMakerFee +=
+          currentPositionSize *
+          levelEntryPrice *
+          (i == 0 ? takerFee : makerFee);
 
       averageEntryPrice = totalNotionalValue / totalPositionSize;
-      double targetProfitAmount = initialInvestment * profitTarget;
+      double targetProfitAmount =
+          initialInvestment * profitTarget + totalMakerFee;
 
       double targetExitPrice;
       if (isLong) {
         targetExitPrice =
-            averageEntryPrice + (targetProfitAmount / totalPositionSize);
+            (averageEntryPrice + (targetProfitAmount / totalPositionSize)) *
+            (1.0 + takerFee);
       } else {
         targetExitPrice =
-            averageEntryPrice - (targetProfitAmount / totalPositionSize);
+            (averageEntryPrice - (targetProfitAmount / totalPositionSize)) *
+            (1.0 + takerFee);
       }
 
       levels.add(
