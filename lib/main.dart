@@ -6,6 +6,7 @@ import 'package:myapp/controllers/controller.dart';
 import 'package:myapp/env.dart';
 import 'package:myapp/firebase_options.dart';
 import 'package:myapp/modals/result.dart';
+import 'package:myapp/util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:developer' as developer;
 
@@ -112,7 +113,7 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     List<MartingaleLevel> levels = [];
     double totalPositionSize = 0;
     double totalNotionalValue = 0;
-    var levelEntryPrice = entryPrice;
+    double levelEntryPrice;
 
     // slipt initial investment into maxAdditions parts
     var x = 1.0;
@@ -123,36 +124,42 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     }
 
     var sum = xList.fold(0.0, (prev, element) => prev + element);
-    Get.log('xList: $xList');
-    Get.log('sum: $sum');
+    // Get.log('xList: $xList');
+    // Get.log('sum: $sum');
 
-    var initialPosition = initialInvestment / sum / entryPrice * leverage;
-    double currentPositionSize = initialPosition;
+    double currentPositionSize;
     double averageEntryPrice = entryPrice;
-    var totalMakerFee = 0.0;
+    var totalFee = 0.0;
 
     for (int i = 0; i < maxAdditions; i++) {
-      if (i != 0) {
+      if (i == 0) {
+        levelEntryPrice = entryPrice;
+      } else {
         levelEntryPrice = isLong
             ? averageEntryPrice * (1 - priceDecrease)
             : averageEntryPrice * (1 + priceDecrease);
-        currentPositionSize =
-            initialInvestment / sum * xList[i] / levelEntryPrice * leverage;
       }
+      currentPositionSize =
+          initialInvestment /
+          sum *
+          xList[i] /
+          levelEntryPrice *
+          leverage /
+          (1 + leverage * priceDecrease);
+      // currentPositionSize = currentPositionSize.toMyCeil(3);
 
       const makerFee = 0.02 / 100;
       const takerFee = 0.055 / 100;
 
       totalPositionSize += currentPositionSize;
       totalNotionalValue += currentPositionSize * levelEntryPrice;
-      totalMakerFee +=
+      totalFee +=
           currentPositionSize *
           levelEntryPrice *
           (i == 0 ? takerFee : makerFee);
 
       averageEntryPrice = totalNotionalValue / totalPositionSize;
-      double targetProfitAmount =
-          initialInvestment * profitTarget + totalMakerFee;
+      double targetProfitAmount = initialInvestment * profitTarget + totalFee;
 
       double targetExitPrice;
       if (isLong) {
