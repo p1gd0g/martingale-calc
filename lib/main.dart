@@ -103,8 +103,8 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
   test() {
     const leverage = 20;
     const decrease = 0.049;
-    var currentPosition = 0.006;
-    var entryPrice = 111915.0;
+    var currentPosition = 0.005;
+    var entryPrice = 123188;
     var totalNotional = 0.0;
     var totalPosition = 0.0;
 
@@ -112,18 +112,22 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
     totalNotional += currentNotional;
     totalPosition += currentPosition;
     var nextPrice = entryPrice * (1 - decrease);
+
     var margin =
         currentNotional / leverage + (entryPrice - nextPrice) * totalPosition;
+    var totalMargin = margin;
 
     for (var i = 1; i < 10; i++) {
       var avgEntryPrice = totalNotional / totalPosition;
       var currentPrice = avgEntryPrice * (1 - decrease);
       margin = margin * 1.1;
+      totalMargin += margin;
 
       currentPosition =
           (margin +
               totalPosition * (avgEntryPrice * (1 - decrease) - currentPrice)) /
           (currentPrice * (1 / leverage + decrease));
+      currentPosition = currentPosition.toPrecision(3);
 
       Get.log(
         'Level: ${i + 1}, Price: $currentPrice, Position: $currentPosition, Margin: $margin, Avg Entry: $avgEntryPrice',
@@ -132,6 +136,10 @@ class _BybitMartingaleCalculatorState extends State<BybitMartingaleCalculator> {
       totalNotional += currentPosition * currentPrice;
       totalPosition += currentPosition;
     }
+
+    Get.log('Total margin: $totalMargin');
+    Get.log('Total position: $totalPosition');
+    Get.log('Total notional: $totalNotional');
   }
 
   List<MartingaleLevel> _calculateBybitMartingaleLevels({

@@ -26,3 +26,4 @@ mmr = (current_price - next_price) * (total_position + x)
 margin = imr + mmr = last_margin * 1.1
 next_average_price = (total_notional_value + current_price * x) / (total_position + x)
 
+x = [last_margin * 1.1 - current_price * total_position + total_notional_value * (1 - decrease)] / [current_price * (1/leverage + decrease)]
